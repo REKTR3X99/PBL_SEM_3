@@ -1,10 +1,15 @@
-//import java.util.*;
 import javax.swing.*;
-import java.awt.*;
 import java.util.ArrayList;
 import java.io.*;
+
 public class Initializer
 {
+	JFrame Frame = new JFrame(); //BaseFrame Initialization
+	JPanel SelectionPanel = new JPanel(); //Selection Panel
+	JButton  PressButton = new JButton("Click"); //Button 
+	JComboBox<String> CountriesComboBox = new JComboBox<String>(); //Combo box
+	JLabel CapitalDisplay = new JLabel();
+	
 	public static void main(String args[])
 	{
 		Initializer Init = new Initializer();
@@ -14,53 +19,61 @@ public class Initializer
 	//Generates Window frame and adds the buttons and panels
 	void InitFrame() 
 	{
-		Dimension ButtonDimmension = new Dimension(100,100);
 		ArrayList<String> CountryList = new ArrayList<String>();
-		BufferedReader Reader = null; //BufferedReader Object
-		String line = "";
+		ArrayList<String> CapitalList = new ArrayList<String>();
+		BufferedReader CountryListReader = null; //BufferedReader Object
+		BufferedReader CapitalListReader = null;
+		String CountryLine = "";
+		String CapitalLine = "";
+		Listener Listen = new Listener();
+		
+		
+		int Index = 0;
 		//Checking if file exists
 		try
 		{	
-			Reader = new BufferedReader(new FileReader("Resources/CountryNames.dat")); 	
+			CountryListReader = new BufferedReader(new FileReader("Resources/CountryNames.dat")); 	
+			CapitalListReader = new BufferedReader(new FileReader("Resources/CapitalNames.dat"));
 		}catch(FileNotFoundException e)
 		{
 			final  JPanel panel = new JPanel(); //JPanel for error
 			JOptionPane.showMessageDialog(panel,"could not open file", "Error", JOptionPane.ERROR_MESSAGE);  //Displaying error
 		}
 		
-		while(line != null)
+		while(CountryLine != null && CapitalLine != null)
 		{
 			try {
-				line = Reader.readLine();
+				CountryLine = CountryListReader.readLine();
+				CapitalLine = CapitalListReader.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
-			CountryList.add(line);
+			CountryList.add(Index, CountryLine); //adding the names of the country to the list
+			CapitalList.add(Index, CapitalLine); //adding the names of capitals to another list
+			Index++;
 		}
+
 		
-		
-		
-		JFrame Frame = new JFrame(); //BaseFrame Initialization
-		JPanel Panel = new JPanel(); //Base Panel 
-		JButton  PressButton = new JButton(); //Button 
-		JComboBox<String> CountriesComboBox = new JComboBox<String>(); //Combo box
 		CountriesComboBox.setModel(new DefaultComboBoxModel(CountryList.toArray()));
+		CountriesComboBox.setBounds(10, 10, 500, 40);
+		
+		PressButton.setBounds(520,10,200,40);
+		
+		SelectionPanel.setLayout(null);
+		Frame.add(SelectionPanel); //adding panel to the frame
+		SelectionPanel.add(CountriesComboBox);//adding combo box to the panel
+		SelectionPanel.add(PressButton); //Adding button to the panel
 		
 		
-		Frame.add(Panel); //adding panel to the frame
-		Panel.setLayout(new GridLayout(0,2,10,10)); //setting the paneel layout
-		Panel.add(CountriesComboBox);//adding combo box to the panel
-		Panel.add(PressButton); //Adding button to the panel
+		CapitalDisplay.setBounds(10, 100, 600, 50);
+		SelectionPanel.add(CapitalDisplay);
 		
+		PressButton.addActionListener(Listen.PressButtonAction);
+		CountriesComboBox.addActionListener(Listen.ComboBoxAction);
 		Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Frame.setSize(600,480);
 		Frame.setVisible(true); 	
-	}
-	
-	//To get the display resolution and dynamically adjust the default value of the window
-	void GetFrameBounds()
-	{
-		Rectangle Bounds;
+		
 	}
 }
