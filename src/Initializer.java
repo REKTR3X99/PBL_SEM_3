@@ -1,14 +1,19 @@
 import javax.swing.*;
 import java.util.ArrayList;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.*;
 
 public class Initializer
 {
+	
+	
 	JFrame Frame = new JFrame(); //BaseFrame Initialization
 	JPanel SelectionPanel = new JPanel(); //Selection Panel
 	JButton  PressButton = new JButton("Click"); //Button 
-	JComboBox<String> CountriesComboBox = new JComboBox<String>(); //Combo box
-	JLabel CapitalDisplay = new JLabel();
+	static JComboBox<String> CountriesComboBox = new JComboBox<String>(); //Combo box
+	static JLabel CapitalDisplay = new JLabel();
+	
 	
 	public static void main(String args[])
 	{
@@ -25,7 +30,7 @@ public class Initializer
 		BufferedReader CapitalListReader = null;
 		String CountryLine = "";
 		String CapitalLine = "";
-		Listener Listen = new Listener();
+		Listener ActionListener = new Listener();
 		
 		
 		int Index = 0;
@@ -69,11 +74,18 @@ public class Initializer
 		CapitalDisplay.setBounds(10, 100, 600, 50);
 		SelectionPanel.add(CapitalDisplay);
 		
-		PressButton.addActionListener(Listen.PressButtonAction);
-		CountriesComboBox.addActionListener(Listen.ComboBoxAction);
+		//Binding action listeners
+		PressButton.addActionListener(ActionListener.PressButtonAction);
+		CountriesComboBox.addActionListener(ActionListener.ComboBoxAction);
+		
+		CapitalDisplay.setText("World");
 		Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Frame.setSize(600,480);
 		Frame.setVisible(true); 	
-		
 	}
+	
+	
 }
+
+
+	
