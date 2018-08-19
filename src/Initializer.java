@@ -1,5 +1,7 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -16,23 +18,35 @@ public class Initializer
 	static JLabel CapitalDisplay = new JLabel();
 	static ArrayList<String> CountryList = new ArrayList<String>();
 	static ArrayList<String> CapitalList = new ArrayList<String>();
+	static ArrayList<BufferedImage> ImageList = new ArrayList<BufferedImage>();
 	
-	public static void main(String args[])
+	public static void main(String args[]) throws FileNotFoundException
 	{
-		Initializer Init = new Initializer();
-		Init.InitFrame();
-	}
-	
-	//Generates Window frame and adds the buttons and panels
-	void InitFrame() 
-	{
+		FrameInit FInit = new FrameInit();
+		TimeInit TInit = new TimeInit();
 		
+		//Creating Threads
+		Thread InitFrameThread = new Thread(FInit);
+		Thread TimeDispThread = new Thread(TInit);
+		
+		
+		InitFrameThread.start(); //Starting the frame thread
+		TimeDispThread.start(); //starting the Time Display thread
+		
+	}
+}
+
+class FrameInit implements Runnable
+{
+	@Override
+	public void run() {
+
 		BufferedReader CountryListReader = null; //BufferedReader Object
 		BufferedReader CapitalListReader = null;
 		String CountryLine = "";
 		String CapitalLine = "";
 		Listener ActionListener = new Listener();
-		
+		Initializer Init = new Initializer();
 		
 		int Index = 0;
 		//Checking if file exists
@@ -55,43 +69,52 @@ public class Initializer
 				e.printStackTrace();
 			}
 			
-			CountryList.add(Index, CountryLine); //adding the names of the country to the list
-			CapitalList.add(Index, CapitalLine); //adding the names of capitals to another list
+			Initializer.CountryList.add(Index, CountryLine); //adding the names of the country to the list
+			Initializer.CapitalList.add(Index, CapitalLine); //adding the names of capitals to another list
 			Index++;
 		}
 
 		
-		CountriesComboBox.setModel(new DefaultComboBoxModel(CountryList.toArray()));
-		CountriesComboBox.setBounds(10, 10, 500, 40);
+		Initializer.CountriesComboBox.setModel(new DefaultComboBoxModel(Initializer.CountryList.toArray()));
+		Initializer.CountriesComboBox.setBounds(10, 10, 500, 40);
 
 		
-		SelectionPanel.setLayout(null);
-		Frame.add(SelectionPanel); //adding panel to the frame
-		SelectionPanel.add(CountriesComboBox);//adding combo box to the panel
+		Init.SelectionPanel.setLayout(null);
+		Init.Frame.add(Init.SelectionPanel); //adding panel to the frame
+		Init.SelectionPanel.add(Initializer.CountriesComboBox);//adding combo box to the panel
 		
 		
 		//Boundaries and adding Label to SelectionPanel
-		CapitalDisplay.setBounds(520, 10, 600, 50);
-		CapitalDisplay.setBackground(Color.RED);
+		Initializer.CapitalDisplay.setBounds(520, 10, 600, 50);
+		Initializer.CapitalDisplay.setBackground(Color.RED);
 		
-		CapitalDisplay.setFont(new Font("Source Code Pro", Font.BOLD, 20));
-		CapitalDisplay.setBackground(Color.green);
-		SelectionPanel.add(CapitalDisplay);
+		Initializer.CapitalDisplay.setFont(new Font("Source Code Pro", Font.BOLD, 20));
+		Initializer.CapitalDisplay.setBackground(Color.green);
+		Init.SelectionPanel.add(Initializer.CapitalDisplay);
 		
 		//Binding action listeners
-		CountriesComboBox.addActionListener(ActionListener.ComboBoxAction);
+		Initializer.CountriesComboBox.addActionListener(ActionListener.ComboBoxAction);
 		
 		
-		Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		Frame.setSize(600,480);
-		Frame.setVisible(true); 	
+		Init.Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		Init.Frame.setSize(600,480);
+		Init.Frame.setVisible(true); 	
 	}
 	
-	void TimeDisplayInit()
-	{
-		BufferedImage[] TimeStamps;
+}
+
+class TimeInit implements Runnable
+{
+	@Override
+	public void run() {
+		File ImageFileLoc = new File("Resources/ImageFiles"); //Load the Image collection for time stamps
+		File[] IndividualPath = ImageFileLoc.listFiles(); //Getting individual path names
+		
+		for(int i =0; i<10; i++)
+		{
+			System.out.println(IndividualPath[i]);
+		}
 	}
-	
 }
 
 
