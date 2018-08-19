@@ -7,9 +7,7 @@ public class Listener
 	{
 		public void actionPerformed(ActionEvent e)
 		{
-			
-			Initializer.CapitalDisplay.setText(Initializer.CapitalList.get(Initializer.CountriesComboBox.getSelectedIndex()));
-			
+			Initializer.CapitalDisplay.setText(Initializer.CapitalList.get(Initializer.CountriesComboBox.getSelectedIndex()));	
 		}
 	};
 }

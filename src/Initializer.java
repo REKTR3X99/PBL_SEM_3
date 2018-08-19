@@ -1,9 +1,11 @@
 import javax.swing.*;
 import java.util.ArrayList;
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.*;
-
+import java.awt.image.*;
 public class Initializer
 {
 	
@@ -69,7 +71,11 @@ public class Initializer
 		
 		
 		//Boundaries and adding Label to SelectionPanel
-		CapitalDisplay.setBounds(10, 100, 600, 50);
+		CapitalDisplay.setBounds(520, 10, 600, 50);
+		CapitalDisplay.setBackground(Color.RED);
+		
+		CapitalDisplay.setFont(new Font("Source Code Pro", Font.BOLD, 20));
+		CapitalDisplay.setBackground(Color.green);
 		SelectionPanel.add(CapitalDisplay);
 		
 		//Binding action listeners
@@ -81,6 +87,10 @@ public class Initializer
 		Frame.setVisible(true); 	
 	}
 	
+	void TimeDisplayInit()
+	{
+		BufferedImage[] TimeStamps;
+	}
 	
 }
 
