@@ -2,11 +2,8 @@ import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.io.*;
 import java.awt.image.*;
 public class Initializer
@@ -14,12 +11,18 @@ public class Initializer
 	JFrame Frame = new JFrame(); //BaseFrame Initialization
 	JPanel SelectionPanel = new JPanel(); //Selection Panel
 	static JComboBox<String> CountriesComboBox = new JComboBox<String>(); //Combo box
-	static JLabel CapitalDisplay = new JLabel();
-	static ArrayList<String> CountryList = new ArrayList<String>();
-	static ArrayList<String> CapitalList = new ArrayList<String>();
-	static ArrayList<String> GMTOffset = new ArrayList<String>();
-	static BufferedImage[] BufferedImageForTime = new  BufferedImage[10];
-	//IMG coponents
+	static JLabel CapitalDisplay = new JLabel(); //For displaying the capital of the selected country
+	
+	
+	static ArrayList<String> CountryList = new ArrayList<String>();  //To hold  all the country list
+	static ArrayList<String> CapitalList = new ArrayList<String>(); //To hold all thee corresponding capitals
+	static ArrayList<String> GMTOffset = new ArrayList<String>(); //To hold all the corresponding GMT offset of the countries
+	
+	
+	static BufferedImage[] BufferedImageForTime = new  BufferedImage[10]; //To hold the 10 buffered image from 0 - 9 
+	
+	
+	//Components used to display the Image 
 	static JLabel HourTens = new JLabel();
 	static JLabel HourUnits = new JLabel();
 	static JLabel MinuteTens = new JLabel();
@@ -28,10 +31,13 @@ public class Initializer
 	
 	public static void main(String args[]) throws FileNotFoundException
 	{
-		FrameInit FInit = new FrameInit();
-		TimeInit TInit = new TimeInit();
+		FrameInit FInit = new FrameInit(); //Generating an object for the Frame Initialization class
+		TimeInit TInit = new TimeInit(); //Object for the Time Initialization class
 		
-		//Creating Threads
+		/*
+		 * Creating Threads because the Frame would become unresponsive if the Time Initialization is done after
+		 * Since main thread would be occupied with Time Display rather than Frame display
+		 * */
 		Thread InitFrameThread = new Thread(FInit);
 		Thread TimeDispThread = new Thread(TInit);
 		
@@ -47,13 +53,19 @@ class FrameInit implements Runnable
 	@Override
 	public void run() {
 
-		BufferedReader CountryListReader = null; //BufferedReader Object
-		BufferedReader CapitalListReader = null;
-		BufferedReader GMTOffsetReader = null;
-		String CountryLine = "";
+		BufferedReader CountryListReader = null; //BufferedReader Object for reading countries and generating a list
+		BufferedReader CapitalListReader = null; //BFDRD Obj for reading Capitals 
+		BufferedReader GMTOffsetReader = null; //To read GMT Offsets
+		
+		//Strings used to  add read line into the list
+		String CountryLine = ""; 
 		String CapitalLine = "";
 		String GMTOffsetLine = "";
+		
+		//Listener which listens to actions performed s
 		Listener ActionListener = new Listener();
+		
+		//Initializer Object
 		Initializer Init = new Initializer();
 		
 		int Index = 0;
@@ -64,7 +76,7 @@ class FrameInit implements Runnable
 			CapitalListReader = new BufferedReader(new FileReader("Resources/CapitalNames.dat")); //Reading Capital List
 			GMTOffsetReader = new BufferedReader(new FileReader("Resources/TimeZoneOffset.dat")); //Reading GMT Offset for each country
 			
-		}catch(FileNotFoundException e)
+		}catch(FileNotFoundException e) //Catch exception if the file is not found
 		{
 			final  JPanel panel = new JPanel(); //JPanel for error
 			JOptionPane.showMessageDialog(panel,"could not open file", "Error", JOptionPane.ERROR_MESSAGE);  //Displaying error

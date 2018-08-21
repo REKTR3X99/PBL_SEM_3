@@ -1,7 +1,8 @@
 import java.awt.Image;
 import java.util.*;
-
 import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 
 
 public class TimeDisplay
@@ -9,17 +10,18 @@ public class TimeDisplay
 	void getTimeWithOffset()
 	{
 		
-		Calendar CalToGetTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
+		//Setting the Calendar to read GMT Time
+		Calendar CalToGetTime = new GregorianCalendar(TimeZone.getTimeZone("GMT")); 
 	
 		
-		int hour24 = CalToGetTime.get(Calendar.HOUR_OF_DAY);
-		int minute = CalToGetTime.get(Calendar.MINUTE);
-		int[] ImgHour = new int[2]; 
-		int[] ImgMinute = new int[2];
+		int GMTHour = CalToGetTime.get(Calendar.HOUR_OF_DAY); //Get the current GMT Hour
+		int GMTMinute = CalToGetTime.get(Calendar.MINUTE); //Get the current GMT time
+		int[] ImgHour = new int[2];  //Image Corresponding to the given hour
+		int[] ImgMinute = new int[2]; //Image corresponding to the given minute
 		
 		String checker = Initializer.GMTOffset.get(Initializer.CountriesComboBox.getSelectedIndex());
-		String HourString;
-		String MinuteString;
+		String HourString; //To Store the hours
+		String MinuteString; //To Store the minutes
 		boolean DoesExist = true;
 		
 		//Checking if the checker contains "UTC" or not
@@ -28,9 +30,19 @@ public class TimeDisplay
 		 * */
 		if(!checker.contains("UTC"))
 		{
+			/*
+			 * Format of the time in TimeZoneOffset.dat is (sign)X1X2.Y1Y2 
+			 * 
+			 * where sign gives the position relative to GMT, + means its ahead and - means its behind
+			 * X1 and X2 correspond to the hours  
+			 * Y1 and Y2 correspond to the minutes
+			 * 
+			 * substring of 1,3 is X1 and X2 
+			 * substring of 4,6 is Y1 and Y2 
+			 * */
 			HourString = checker.substring(1,3);
 			MinuteString = checker.substring(4,6);
-			DoesExist = true;
+			DoesExist = true; //Saying that the given value exists in the Zone Offset data 
 		}else
 		{
 			DoesExist = false;
@@ -38,57 +50,94 @@ public class TimeDisplay
 			MinuteString ="0";
 		}
 		
-			 if(checker.startsWith("+") && DoesExist) //If the country is ahead GMT
+		
+		/*
+		 * Bottom code checks if the start of the checker. 
+		 * Checker equals the data which has the index of the selected item from the combobox
+		 * and the ZoneOffsetData.
+		 * 
+		 * It checks if the checker starts with which sign and if the spcified value exists in the given data or if its "UTC" 
+		 * for which the time cannot be determined.
+		 */
+		
+		
+		/*
+		 * if checker starts with "+" that is the read data starts with a "+" then add the number of hours of offset 
+		 * which is in the GMTHour to the given hour.
+		 * 
+		 * After this if the number of Hours is more than 25, then negate the hours by 24 which would bring them in range
+		 * Same with the number of minutes
+		 */
+		
+		
+		/*
+		 * if checker starts with "-" the selected country is behind GMT by X1X2 amount of hours. 
+		 * for this negate the number of hours ( Offset) from GMT.
+		 * 
+		 * If the number is less than 0 then add 24 to it to bring it to the proper range
+		 * same with the number of minutes
+		 * */
+		
+		
+			 if(checker.startsWith("+") && DoesExist) //If the country is ahead GMT and does exists in the ZoneOffsetData
 			 {
 				 try
 				 {
-					 hour24 = hour24 + Integer.parseInt(HourString) + 1;
-					 minute = minute + Integer.parseInt(MinuteString);
+					// offsetting the given GMTHour from the calendar by the Zone Offset from GMT
+					 //For some reason  if I don't add 1 the time remains an hour behind so there's a 1
+					 //Also converting HourString from String to Int
+					 GMTHour = GMTHour + Integer.parseInt(HourString) + 1; 
 					 
-					 if(hour24 >= 24) //Checking the addition exceeds or equals 24 hours
+					 //Offsetting the minute and adding it to the GMTMinute.
+					 //Also parsing the value of MinuteString to convert from String to Int
+					 GMTMinute = GMTMinute + Integer.parseInt(MinuteString);
+					 
+					 if(GMTHour >= 24) //Checking the addition exceeds or equals 24 hours
 					 {
-						 hour24 = hour24 - 24; //Negating by 24 incase it exceeds
+						 GMTHour = GMTHour - 24; //Negating by 24 incase it exceeds
 					 }
 					 
-					 if(minute >= 60) //Checking if minutes exceeds or equals 60 minute
+					 if(GMTMinute >= 60) //Checking if minutes exceeds or equals 60 minute
 					 {
-						 minute = minute - 60; //If it does, negate by 60
+						 GMTMinute = GMTMinute - 60; //If it does, negate by 60
 					 }
 				 }catch(Exception e)
 				 {
-					 System.out.println(e);
+					 final  JPanel panel = new JPanel(); //JPanel for error
+						JOptionPane.showMessageDialog(panel,"Parsing Error for countries Ahead of GMT", "Error", JOptionPane.ERROR_MESSAGE);  //Displaying error
 				 }
 			 }else if(checker.startsWith("-") && DoesExist) //If the country is behind GMT
 			 {
 				 try
 				 {
-					 hour24 = hour24 - Integer.parseInt(HourString);
-					 minute = minute - Integer.parseInt(MinuteString);
+					 GMTHour = GMTHour - Integer.parseInt(HourString);
+					 GMTMinute = GMTMinute - Integer.parseInt(MinuteString);
 					 
-					 if(hour24 < 0)
+					 if(GMTHour < 0)
 					 {
-						 hour24 = hour24 + 24;
+						 GMTHour = GMTHour + 24;
 					 }
 					 
-					 if(minute < 0)
+					 if(GMTMinute < 0)
 					 {
-						 minute = minute + 60;
+						 GMTMinute = GMTMinute + 60;
 					 }
 				 }catch(Exception e)
 				 {
-					 System.out.println(e);
+					 final  JPanel panel = new JPanel(); //JPanel for error
+						JOptionPane.showMessageDialog(panel,"Parsing error for countries behind GMT", "Error", JOptionPane.ERROR_MESSAGE);  //Displaying error
 				 }
 			 }
-			 System.out.println(hour24 + ":" + minute);
+			 System.out.println(GMTHour + ":" + GMTMinute);
 			
-			 System.out.println(hour24 % 10);
+			 System.out.println(GMTHour % 10);
 			 
-			 ImgHour[1] = hour24 % 10;
-			 ImgMinute[1] = minute % 10;
-			 hour24 = hour24 / 10;
-			 minute = minute / 10;
-			 ImgHour[0] = hour24;
-			 ImgMinute[0] = minute;
+			 ImgHour[1] = GMTHour % 10; //Extracting the Second number of Hour 
+			 ImgMinute[1] = GMTMinute % 10; //Extracting the Second number of Minute
+			 GMTHour = GMTHour / 10; //Dividng Hour by 10  
+			 GMTMinute = GMTMinute / 10; //Dividing Minute by 10
+			 ImgHour[0] = GMTHour; //Extracting the First number of Hour
+			 ImgMinute[0] = GMTMinute; //EXtracting First number of Minute
 			 
 			 
 			 //Variables for scaling the image
