@@ -32,6 +32,16 @@ public class TimeDisplay
 				 {
 					 hour24 = hour24 + Integer.parseInt(HourString);
 					 minute = minute + Integer.parseInt(MinuteString);
+					 
+					 if(hour24 > 24)
+					 {
+						 hour24 = hour24 - 24;
+					 }
+					 
+					 if(minute > 60)
+					 {
+						 minute = minute - 60;
+					 }
 				 }catch(Exception e)
 				 {
 					 System.out.println(e);
@@ -41,7 +51,17 @@ public class TimeDisplay
 				 try
 				 {
 					 hour24 = hour24 - Integer.parseInt(HourString);
-					 minute = minute + Integer.parseInt(MinuteString);
+					 minute = minute - Integer.parseInt(MinuteString);
+					 
+					 if(hour24 > 24)
+					 {
+						 hour24 = hour24 - 24;
+					 }
+					 
+					 if(minute > 60)
+					 {
+						 minute = minute - 60;
+					 }
 				 }catch(Exception e)
 				 {
 					 System.out.println(e);
@@ -59,13 +79,44 @@ public class TimeDisplay
 			 ImgMinute[0] = minute;
 			 
 			 
-			 ImageIcon Icon = new ImageIcon(Initializer.BufferedImageForTime[ImgHour[0]]);
-			 Image IconInstance = Icon.getImage();
-			 Image NewIconInstance = IconInstance.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+			 //Variables for scaling the image
+			 ImageIcon Icon;
+			 Image IconInstance;
+			 Image NewIconInstance;
+			 
+			 
+			 //Performing Image scaling on individual Labels 
+			 /*
+			  * I know there are better methods but for the time being I'll stick to this so that I won't break the entire code
+			  * */
+			 
+			 Icon = new ImageIcon(Initializer.BufferedImageForTime[ImgHour[0]]); //Converting the File read into BufferedImage into an ImageIcon
+			 IconInstance = Icon.getImage(); //Getting the Image from the ImageIcon to an Image
+			 NewIconInstance = IconInstance.getScaledInstance(100, 100, Image.SCALE_SMOOTH); //Scaling the Image to 100 x 100 resolution 
+			 Icon = new ImageIcon(NewIconInstance); //Converting the image from Image to IconImage
+			 
+			 Initializer.HourTens.setIcon(Icon); //Setting the Icon on the label to the given ImageIcon
+			 
+			 Icon = new ImageIcon(Initializer.BufferedImageForTime[ImgHour[1]]);
+			 IconInstance = Icon.getImage();
+			 NewIconInstance = IconInstance.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
 			 Icon = new ImageIcon(NewIconInstance);
 			 
-			 Initializer.HourTens.setIcon(Icon);
+			 Initializer.HourUnits.setIcon(Icon);
 			 
+			 Icon = new ImageIcon(Initializer.BufferedImageForTime[ImgMinute[0]]);
+			 IconInstance = Icon.getImage();
+			 NewIconInstance = IconInstance.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+			 Icon = new ImageIcon(NewIconInstance);
+			 
+			 Initializer.MinuteTens.setIcon(Icon);
+			 
+			 Icon = new ImageIcon(Initializer.BufferedImageForTime[ImgMinute[1]]);
+			 IconInstance = Icon.getImage();
+			 NewIconInstance = IconInstance.getScaledInstance(100, 100, Image.SCALE_SMOOTH);
+			 Icon = new ImageIcon(NewIconInstance);
+			 
+			 Initializer.MinuteUnits.setIcon(Icon);
 		
 	}
 }
