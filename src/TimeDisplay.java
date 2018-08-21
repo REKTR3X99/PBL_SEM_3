@@ -10,57 +10,69 @@ public class TimeDisplay
 	{
 		
 		Calendar CalToGetTime = new GregorianCalendar(TimeZone.getTimeZone("GMT"));
-		/*List<String> TimeZoneIDList = new ArrayList<String>();
-		String[] TimeZoneID = TimeZone.getAvailableIDs();
-		Initializer Init = new Initializer();
-		/*int hour24 = CalToGetTime.get(Calendar.HOUR_OF_DAY);
-		int Minute24 = CalToGetTime.get(Calendar.MINUTE);
-		//System.out.println(Initializer.CountriesComboBox.getSelectedItem());
-		*/
+	
+		
 		int hour24 = CalToGetTime.get(Calendar.HOUR_OF_DAY);
 		int minute = CalToGetTime.get(Calendar.MINUTE);
 		int[] ImgHour = new int[2]; 
 		int[] ImgMinute = new int[2];
 		
 		String checker = Initializer.GMTOffset.get(Initializer.CountriesComboBox.getSelectedIndex());
-		String HourString = checker.substring(1,3);
-		String MinuteString = checker.substring(4,6);
+		String HourString;
+		String MinuteString;
+		boolean DoesExist = true;
 		
-			 if(checker.startsWith("+"))
+		//Checking if the checker contains "UTC" or not
+		/*
+		 * If It does have UTC it means that the time cannot be determined 
+		 * */
+		if(!checker.contains("UTC"))
+		{
+			HourString = checker.substring(1,3);
+			MinuteString = checker.substring(4,6);
+			DoesExist = true;
+		}else
+		{
+			DoesExist = false;
+			HourString = "0";
+			MinuteString ="0";
+		}
+		
+			 if(checker.startsWith("+") && DoesExist) //If the country is ahead GMT
 			 {
 				 try
 				 {
-					 hour24 = hour24 + Integer.parseInt(HourString);
+					 hour24 = hour24 + Integer.parseInt(HourString) + 1;
 					 minute = minute + Integer.parseInt(MinuteString);
 					 
-					 if(hour24 > 24)
+					 if(hour24 >= 24) //Checking the addition exceeds or equals 24 hours
 					 {
-						 hour24 = hour24 - 24;
+						 hour24 = hour24 - 24; //Negating by 24 incase it exceeds
 					 }
 					 
-					 if(minute > 60)
+					 if(minute >= 60) //Checking if minutes exceeds or equals 60 minute
 					 {
-						 minute = minute - 60;
+						 minute = minute - 60; //If it does, negate by 60
 					 }
 				 }catch(Exception e)
 				 {
 					 System.out.println(e);
 				 }
-			 }else if(checker.startsWith("-"))
+			 }else if(checker.startsWith("-") && DoesExist) //If the country is behind GMT
 			 {
 				 try
 				 {
 					 hour24 = hour24 - Integer.parseInt(HourString);
 					 minute = minute - Integer.parseInt(MinuteString);
 					 
-					 if(hour24 > 24)
+					 if(hour24 < 0)
 					 {
-						 hour24 = hour24 - 24;
+						 hour24 = hour24 + 24;
 					 }
 					 
-					 if(minute > 60)
+					 if(minute < 0)
 					 {
-						 minute = minute - 60;
+						 minute = minute + 60;
 					 }
 				 }catch(Exception e)
 				 {
