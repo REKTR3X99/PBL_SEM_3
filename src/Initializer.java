@@ -1,6 +1,7 @@
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.awt.Color;
 import java.awt.Font;
@@ -9,16 +10,21 @@ import java.awt.event.ActionListener;
 import java.io.*;
 import java.awt.image.*;
 public class Initializer
-{
-	
-	
+{	
 	JFrame Frame = new JFrame(); //BaseFrame Initialization
 	JPanel SelectionPanel = new JPanel(); //Selection Panel
 	static JComboBox<String> CountriesComboBox = new JComboBox<String>(); //Combo box
 	static JLabel CapitalDisplay = new JLabel();
 	static ArrayList<String> CountryList = new ArrayList<String>();
 	static ArrayList<String> CapitalList = new ArrayList<String>();
-	static ArrayList<BufferedImage> ImageList = new ArrayList<BufferedImage>();
+	static ArrayList<String> GMTOffset = new ArrayList<String>();
+	static BufferedImage[] BufferedImageForTime = new  BufferedImage[10];
+	//IMG coponents
+	static JLabel HourTens = new JLabel();
+	static JLabel HourUnits = new JLabel();
+	static JLabel MinuteTens = new JLabel();
+	static JLabel MinuteUnits = new JLabel();
+	
 	
 	public static void main(String args[]) throws FileNotFoundException
 	{
@@ -43,8 +49,10 @@ class FrameInit implements Runnable
 
 		BufferedReader CountryListReader = null; //BufferedReader Object
 		BufferedReader CapitalListReader = null;
+		BufferedReader GMTOffsetReader = null;
 		String CountryLine = "";
 		String CapitalLine = "";
+		String GMTOffsetLine = "";
 		Listener ActionListener = new Listener();
 		Initializer Init = new Initializer();
 		
@@ -52,25 +60,30 @@ class FrameInit implements Runnable
 		//Checking if file exists
 		try
 		{	
-			CountryListReader = new BufferedReader(new FileReader("Resources/CountryNames.dat")); 	
-			CapitalListReader = new BufferedReader(new FileReader("Resources/CapitalNames.dat"));
+			CountryListReader = new BufferedReader(new FileReader("Resources/CountryNames.dat")); 	//Reading Country List
+			CapitalListReader = new BufferedReader(new FileReader("Resources/CapitalNames.dat")); //Reading Capital List
+			GMTOffsetReader = new BufferedReader(new FileReader("Resources/TimeZoneOffset.dat")); //Reading GMT Offset for each country
+			
 		}catch(FileNotFoundException e)
 		{
 			final  JPanel panel = new JPanel(); //JPanel for error
 			JOptionPane.showMessageDialog(panel,"could not open file", "Error", JOptionPane.ERROR_MESSAGE);  //Displaying error
 		}
 		
-		while(CountryLine != null && CapitalLine != null)
+		while(CountryLine != null && CapitalLine != null && GMTOffsetLine != null)
 		{
 			try {
 				CountryLine = CountryListReader.readLine();
 				CapitalLine = CapitalListReader.readLine();
+				GMTOffsetLine = GMTOffsetReader.readLine();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
 			
 			Initializer.CountryList.add(Index, CountryLine); //adding the names of the country to the list
 			Initializer.CapitalList.add(Index, CapitalLine); //adding the names of capitals to another list
+			Initializer.GMTOffset.add(Index, GMTOffsetLine); //adding GMT Offset to its corresponding list
+			
 			Index++;
 		}
 
@@ -95,7 +108,18 @@ class FrameInit implements Runnable
 		//Binding action listeners
 		Initializer.CountriesComboBox.addActionListener(ActionListener.ComboBoxAction);
 		
+		//IMG FRAME 
 		
+		Initializer.HourTens.setBounds(10, 240, 100, 100);
+		Initializer.HourUnits.setBounds(120, 240, 100, 100);
+		Initializer.MinuteTens.setBounds(230, 240, 100, 100);
+		Initializer.MinuteUnits.setBounds(340, 240, 100, 100);
+		
+		Init.SelectionPanel.add(Initializer.HourTens);
+		Init.SelectionPanel.add(Initializer.HourUnits);
+		Init.SelectionPanel.add(Initializer.MinuteTens);
+		Init.SelectionPanel.add(Initializer.MinuteUnits);
+
 		Init.Frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		Init.Frame.setSize(600,480);
 		Init.Frame.setVisible(true); 	
@@ -107,15 +131,35 @@ class TimeInit implements Runnable
 {
 	@Override
 	public void run() {
-		File ImageFileLoc = new File("Resources/ImageFiles"); //Load the Image collection for time stamps
-		File[] IndividualPath = ImageFileLoc.listFiles(); //Getting individual path names
+		File ImageFileLoc = new File("Resources/ImageFiles");//Load the Image collection for time stamps
 		
+		File[] IndividualPath = ImageFileLoc.listFiles(); //Getting individual path names
+		Arrays.sort(IndividualPath);
 		for(int i =0; i<10; i++)
 		{
 			System.out.println(IndividualPath[i]);
 		}
+		for(int i =0; i<10; i++)
+		{
+			Initializer.BufferedImageForTime[i] = new BufferedImage(720,720,BufferedImage.TYPE_INT_RGB);
+		}
+		
+		try
+		{
+			for(int i =0;  i<10; i++)
+			{
+				Initializer.BufferedImageForTime[i] = ImageIO.read(IndividualPath[i]);
+			}
+			
+		}catch(Exception e)
+		{
+			System.out.println(e);
+		}
+		
+		
+		}
 	}
-}
+
 
 
 	
